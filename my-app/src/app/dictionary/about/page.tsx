@@ -1,8 +1,9 @@
 export default function Page() {
     return (
-        <main className="flex min-h-screen flex-col items-center justify-between p-24">
-            <div>
-                <h1>About</h1>
+        // <main className="flex min-h-screen flex-col items-center justify-between p-24">
+            <main className="flex-col min-h-screen items-center justify-center bg-gray-50">
+            <div className="p-6 flex-grow">
+                <h1 className="text-purple-800" >About</h1>
                 <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. 
                 Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, 
                 when an unknown printer took a galley of type and scrambled it to make a type specimen book. 
