@@ -1,18 +1,29 @@
 const posts = [
     {
-        id: "demo_01",
-        definition: "look_up 1",
-        content: 
-            "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-        date: "010124",
-        user: "user_01"
+      id: "a5e08164-b12b-4e72-9191-2f7daadb4e88",
+      title: "Blood",
+      content:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do ei",
+      date: "276761",
+      user: "Sandra B",
     },
     {
-        id: "demo_02",
-        definition: "look_up 2",
-        content: 
-            "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-        date: "010124",
-        user: "user_01"
+      id: "6bd38af3-8a95-4a7a-add7-fd69c6b8f124",
+      title: "Cell",
+      content:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      date: "911166",
+      user: "Sandra B",
     },
-]
+    {
+      id: "836b0611-e82e-4b5e-8ab9-8e9f98e43549",
+      title: "Cancer",
+      content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      date: "393288",
+      user: "Sandy L",
+    },
+  ];
+  
+  module.exports = {
+    posts,
+  };
