@@ -2,8 +2,8 @@
 import {
   UserGroupIcon,
   HomeIcon,
-  DocumentDuplicateIcon,
-  EnvelopeIcon
+  EnvelopeIcon,
+  FolderIcon,
 } from '@heroicons/react/24/outline';
 
 // Map of links to display in the side navigation.
@@ -17,7 +17,7 @@ const links = [
   {
     name: 'History',
     href: '/dictionary/history',
-    icon: DocumentDuplicateIcon,
+    icon: FolderIcon,
   },
   { name: 'About', href: '/dictionary/about', icon: UserGroupIcon},
   { name: 'Contact', href: '/dictionary/contact', icon: EnvelopeIcon },
