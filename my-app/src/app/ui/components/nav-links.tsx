@@ -4,6 +4,7 @@ import {
   HomeIcon,
   EnvelopeIcon,
   FolderIcon,
+  DocumentMagnifyingGlassIcon,
 } from '@heroicons/react/24/outline';
 
 // Map of links to display in the side navigation.
@@ -14,6 +15,7 @@ import clsx from 'clsx';
 
 const links = [
   { name: 'Home', href: '/', icon: HomeIcon  },
+  { name: 'Results', href: '/dictionary/results', icon: DocumentMagnifyingGlassIcon},
   {
     name: 'History',
     href: '/dictionary/history',
@@ -22,7 +24,6 @@ const links = [
   },
   { name: 'About', href: '/dictionary/about', icon: UserGroupIcon},
   { name: 'Contact', href: '/dictionary/contact', icon: EnvelopeIcon },
-  { name: 'Results', href: '/dictionary/results', icon: FolderIcon},
 ];
 
 export default async function NavLinks() {
@@ -35,7 +36,12 @@ export default async function NavLinks() {
           <Link
             key={link.name}
             href={link.href}
-            className="'flex h-[48px] grow items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-purple-100 md:flex-none md:justify-start md:p-2 md:px-3'"
+            className={clsx(
+              'flex h-[48px] grow items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-purple-100 md:flex-none md:justify-start md:p-2 md:px-3',
+              {
+                'bg-purple-100': pathname === link.href,
+              }
+            )}
           >
             <LinkIcon className="w-6" />
             <p className="hidden md:block">{link.name}</p>

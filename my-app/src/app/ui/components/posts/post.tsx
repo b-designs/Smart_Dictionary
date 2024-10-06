@@ -7,9 +7,9 @@ export default function Post({ id, title, content, date }: {
     date: string }) {
     return (
         <div key={id} className="border border-gray-200 p-4 my-4">
-            <h2>{title}</h2>
-            <p className="text-gray-500">{date}</p>
-            <p>{content}</p>
+            <h2 className="px-1 text-emerald-500">{title}</h2>
+            <p className="text-gray-500 p-1">ID# {date}</p>
+            <p className="p-1">{content}</p>
         </div>
     );
 }
