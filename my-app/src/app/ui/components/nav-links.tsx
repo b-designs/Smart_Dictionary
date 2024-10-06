@@ -18,9 +18,11 @@ const links = [
     name: 'History',
     href: '/dictionary/history',
     icon: FolderIcon,
+    // icon: HomeIcon,
   },
   { name: 'About', href: '/dictionary/about', icon: UserGroupIcon},
   { name: 'Contact', href: '/dictionary/contact', icon: EnvelopeIcon },
+  { name: 'Results', href: '/dictionary/results', icon: FolderIcon},
 ];
 
 export default async function NavLinks() {
