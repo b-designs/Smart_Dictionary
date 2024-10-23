@@ -8,34 +8,35 @@ import {
   MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline';
 
+// const SearchBar: React.FC<SearchBarProps> = ({ data }) => {
+export default function SearchBar(){
+  const [word, setWord] = useState<string>('');
+  const [definition, setDefinition] = useState<any>(null);  // You may want to create a proper type for the definition if you know the structure.
+  const [error, setError] = useState<string | null>(null);
 
-interface SearchBarProps {
-  data: string[];
-  className?: string;
-}
+  const handleSearch = async () => {
+    if (!word) return;
 
-const SearchBar: React.FC<SearchBarProps> = ({ data }) => {
-  const [query, setQuery] = useState<string>('');
-  const [filteredData, setFilteredData] = useState<string[]>(data);
+    try {
+      // const res = await fetch(`/ui/components/searchbar?word=${word}`);
+      const res = await fetch(`/api/dictionary?word=${word}`);
+      const data = await res.json();
 
-  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const searchQuery = event.target.value.toLowerCase();
-    setQuery(searchQuery);
-
-    if (searchQuery === '') {
-      // setFilteredData(data);  // If search bar is empty, show all data
-    } else {
-      const filtered = data.filter((item) =>
-        item.toLowerCase().includes(searchQuery)
-      );
-      setFilteredData(filtered);
+      if (res.ok) {
+        setDefinition(data);
+        setError(null);
+      } else {
+        setError(data.error || 'Something went wrong');
+      }
+    } catch (err) {
+      setError('Failed to fetch data');
     }
   };
 
   return (
     <div className="flex items-center border border-gray-300 rounded-lg p-2 bg-white w-full max-w-md">
-      {/* Magnifying Glass Icon */}
-      <button style={{cursor: 'pointer'}}>
+      {/*Magnifying Glass Icon */}
+      <button onClick={handleSearch} style={{cursor: 'pointer'}}>
         <MagnifyingGlassIcon className="h-5 w-5 text-gray-500 ml-1" />
       </button>
       
@@ -43,20 +44,19 @@ const SearchBar: React.FC<SearchBarProps> = ({ data }) => {
       <input
         type="text"
         placeholder="Search..."
-        value={query}
-        onChange={handleSearch}
+        value={word}
+        onChange={(e) => setWord(e.target.value)}
         className="flex-grow outline-none border-none text-gray-600 ml-2"
       />
-      <ul>
-        {filteredData.map((item, index) => (
-            <li key={index}>{item}</li>
-          ))}
-      </ul>
+
+      {error && <p>{error}</p>}
+        {definition && (
+          <div>
+            <h3>Definition:</h3>
+              <pre>{JSON.stringify(definition, null, 2)}</pre>
+          </div>
+        )}
       
-      {/* Keyboard Shortcut */}
-      {/* <span className="text-gray-400 mr-2">⌘K</span> */}
   </div>
   );
 };
-
-export default SearchBar;

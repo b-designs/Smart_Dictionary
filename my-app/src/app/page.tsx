@@ -4,19 +4,18 @@
 import Image from "next/image";
 import SearchBar from './ui/components/searchbar';
 import styles from '@/app/ui/styles/home.module.css'
+import DictionaryLookup from './api/dictionaryLookUp';
+
 
 export default function Home() {
 
-  const data = [
-    ''
-  ];
   return (
     <main className="flex items-center justify-center min-h-screen bg-gray-50">
       <div className="container mx-auto p-4 relative">
         <div className="bg-white border-2 border-emerald-100 rounded-lg p-6 grid grid-cols-1 gap-4">
           <div className="flex flex-col justify-center">
             <h1 className="text-4xl text-emerald-500 font-bold mb-4 p-1">Let's Start Searching</h1>
-            <SearchBar data={data}/>
+            <SearchBar/>
             <p className="text-lg text-gray-700 mt-4 mb-4">
               A place to improve second language aquisition learning. A place to recollect previous searches and improve recognition.
             </p>
@@ -24,6 +23,10 @@ export default function Home() {
               Search History
             </a>
           </div>
+          {/* <div>
+            <h1>Smart Dictionary Lookup</h1>
+              <DictionaryLookup />
+          </div> */}
         </div>
 
       </div>
