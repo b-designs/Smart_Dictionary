@@ -4,7 +4,7 @@
 import Image from "next/image";
 import SearchBar from './ui/components/searchbar';
 import styles from '@/app/ui/styles/home.module.css'
-import DictionaryLookup from './api/dictionaryLookUp';
+// import DictionaryLookup from './api/dictionaryLookUp';
 
 
 export default function Home() {
@@ -19,9 +19,9 @@ export default function Home() {
             <p className="text-lg text-gray-700 mt-4 mb-4">
               A place to improve second language aquisition learning. A place to recollect previous searches and improve recognition.
             </p>
-            <a href="/dictionary/history" className={`outline outline-1 outline-offset-2 border-purple-600 text-emerald-700 hover:text-white py-2 px-4 rounded hover:bg-emerald-600 md:w-auto ${styles.fit_content}`}>
+            {/* <a href="/dictionary/history" className={`outline outline-1 outline-offset-2 border-purple-600 text-emerald-700 hover:text-white py-2 px-4 rounded hover:bg-emerald-600 md:w-auto ${styles.fit_content}`}>
               Search History
-            </a>
+            </a> */}
           </div>
           {/* <div>
             <h1>Smart Dictionary Lookup</h1>
