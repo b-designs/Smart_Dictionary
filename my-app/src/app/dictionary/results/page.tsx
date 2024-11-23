@@ -1,9 +1,20 @@
+/*
+ * DESCRIPTION:
+ * This file handles the results page. The searched word
+ * uses the DictionaryEntry interface to display the relevant
+ * information. 
+ * 
+ */
+
+
 'use client';  // Necessary for accessing search params in Next.js
 
 import { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-
+import { useSearchParams } from 'next/navigation';
 interface DictionaryEntry {
+  meta: {
+    src: string;
+  }
   hwi: {
     hw: string; // The word itself
   };
@@ -13,9 +24,8 @@ interface DictionaryEntry {
 export default function Page() {
   const searchParams = useSearchParams();
   const word = searchParams.get('word'); // Get the search term from the URL
-  const [definitions, setDefinitions] = useState<DictionaryEntry[]>([]);
-  const [primaryDefinitions, setPrimaryDefinitions] = useState<string[]>([]);
-  const [additionalDefinitions, setAdditionalDefinitions] = useState<string[]>([]);
+  const [englishDefinitions, setEnglishDefinitions] = useState<DictionaryEntry[]>([]);
+  const [spanishDefinitions, setSpanishDefinitions] = useState<DictionaryEntry[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [noResultsMessage, setNoResultsMessage] = useState<string | null>(null); // State for no results message
 
@@ -23,37 +33,34 @@ export default function Page() {
     const fetchDefinitions = async () => {
       try {
         const res = await fetch(`/api/dictionary?word=${word}`);
+        // const data: DictionaryResponse = await res.json();
+        // const data = (await res.json()) as DictionaryEntry[];
         const data = await res.json();
 
+        console.log('API Response data:', data);
+
         if (res.ok) {
-          setDefinitions(data);
 
-          // Process definitions and split them by colon
-          const primary: string[] = [];
-          const additional: string[] = [];
+          const englishData = data.english.filter((entry: any) => entry.meta?.src === 'medical');
+          const spanishData = data.spanish.filter((entry: any) => entry.meta?.src === 'spanish');
 
-          data[0]?.shortdef.forEach((def: string) => {
-            const parts = def.split(':');
-            primary.push(parts[0]?.trim()); // First part before the colon
-            additional.push(parts[1]?.trim() || ''); // Second part after the colon (if it exists)
-          });
-
-          // Omit the first item from each array
-          setPrimaryDefinitions(primary.slice(1));
-          setAdditionalDefinitions(additional.slice(1));
+          setEnglishDefinitions(englishData);
+          setSpanishDefinitions(spanishData);
 
           // Check for no results
-          if (primary.length === 0 && additional.length === 0) {
+          if (englishData.length === 0 && spanishData.length === 0) {
             setNoResultsMessage(`No results found for the word '${word}'`);
           } else {
             setNoResultsMessage(null); // Clear the message if results are found
           }
-
           setError(null);
-        } else {
+        } 
+        else {
           setError('No definitions found');
         }
-      } catch (err) {
+      } 
+      catch (err) {
+        console.error('Failed to fetch definitions:', err);
         setError('Failed to fetch definitions');
       }
     };
@@ -62,46 +69,57 @@ export default function Page() {
       fetchDefinitions();
     }
   }, [word]);
-
-  // Capitalize the first letter of the displayed word, with a fallback
-  // const capitalizedWord = definitions[0]?.hwi?.hw
-  //   ? definitions[0].hwi.hw.charAt(0).toUpperCase() + definitions[0].hwi.hw.slice(1)
-  //   : '';
-
+  
   return (
     <main>
       <h1 className="mt-4 text-black-700">Results for {word}...</h1>
       <div className="border border-gray-200 p-4 my-4">
         {error && <p className="text-red-500">{error}</p>}
-
-        {!error && definitions.length > 0 && (
+        {noResultsMessage && <p className="text-yellow-500">{noResultsMessage}</p>}
+  
+        {!error && !noResultsMessage && (
           <div className="flex justify-between">
+  
             {/* English Definition */}
             <div className="w-1/2 pr-4">
-              <h2 className="text-3xl text-emerald-500 p-2">{definitions[0]?.hwi?.hw}</h2>
-              <ul className="list-disc pl-5">
-                {/* {definitions[0]?.shortdef.map((def, index) => (
-                  <li key={index} className="p-2">{def}</li>
-                ))} */}
-                {primaryDefinitions.map((def, index) => (
-                  <li key={index} className="p-2">{def}</li>
-                ))}
-              </ul>
+              {englishDefinitions.map((entry, index) => (
+                <div key={index} className="mb-4">
+                  {/* Display the headword (hw) as a title */}
+                  <h2 className="text-3xl text-emerald-500 p-2">{entry.hwi?.hw}</h2>
+  
+                  {/* Display the "Definition:" label and the definitions as a bulleted list */}
+                  <div className="p-2">
+                    <strong>Definition:</strong>
+                    <ul className="list-disc pl-5">
+                      {entry.shortdef.map((def, defIndex) => (
+                        <li key={defIndex} className="p-2">{def}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              ))}
             </div>
+  
             {/* Spanish Definition */}
             <div className="w-1/2 pl-4">
-              <h2 className="text-3xl text-emerald-500 p-2">{definitions[0]?.shortdef[0]}</h2>
-              <ul className="list-disc pl-5">
-                {additionalDefinitions.map((detail, index) => (
-                  <li key={index} className="p-2">{detail}</li>
-                ))}
-              </ul>
-              <p className="p-2">
-                {/* Translation logic can go here if available */}
-                {/* For now, you can either display a mock translation or skip this */}
-
-              </p>
+              {spanishDefinitions.map((entry, index) => (
+                <div key={index} className="mb-4">
+                  {/* Display the headword (hw) as a title */}
+                  <h2 className="text-3xl text-emerald-500 p-2">{entry.hwi?.hw}</h2>
+  
+                  {/* Display the "Definition:" label and the Spanish definitions as a bulleted list */}
+                  <div className="p-2">
+                    <strong>Definition:</strong>
+                    <ul className="list-disc pl-5">
+                      {entry.shortdef.map((def, defIndex) => (
+                        <li key={defIndex} className="p-2">{def}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              ))}
             </div>
+            
           </div>
         )}
       </div>
