@@ -18,6 +18,7 @@
 
 # data
 /src/data
+/src/cloud
 
 # misc
 .DS_Store

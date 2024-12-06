@@ -22,14 +22,19 @@ interface DictionaryEntry {
   shortdef: string[]; // Array of definitions
 }
 
+interface TranslatedEntry {
+  headword: string;
+  definitions: string[];
+}
+
 export default function Page() {
   const searchParams = useSearchParams();
   const word = searchParams.get('word'); // Get the search term from the URL
   const [englishDefinitions, setEnglishDefinitions] = useState<DictionaryEntry | null>(null);
-  const [spanishDefinitions, setSpanishDefinitions] = useState<DictionaryEntry | null>(null);
+  const [spanishDefinitions, setSpanishDefinitions] = useState<TranslatedEntry | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [noResultsMessage, setNoResultsMessage] = useState<string | null>(null); // State for no results message
-
+  
   useEffect(() => {
     const fetchDefinitions = async () => {
       try {
@@ -41,12 +46,12 @@ export default function Page() {
         if (res.ok) {
           // Extract English and Spanish definitions
           const englishData = data.english.find((entry: any) => entry.meta?.src === 'medical');
-          const spanishData = data.spanish.find((entry: any) => entry.meta?.src === 'spanish');
+          const spanishData = data.spanish; // Spanish is now assumed to have headword and definition
   
           setEnglishDefinitions(englishData || null);
           setSpanishDefinitions(spanishData || null);
   
-          // Check for no results
+          // Handle "no results" case
           if (!englishData && !spanishData) {
             setNoResultsMessage(`No results found for the word '${word}'`);
           } else {
@@ -55,18 +60,18 @@ export default function Page() {
   
           setError(null);
   
-          // Add the word to the history in localStorage
+          // Add the word to history in localStorage
           if (englishData && spanishData) {
             const historyItem = {
               englishWord: word || '',
-              spanishWord: spanishData.shortdef[0]?.split('(')[0]?.trim() || '',
+              spanishWord: spanishData.headword || '',
             };
   
-            // Retrieve the existing history from localStorage
+            // Retrieve existing history from localStorage
             const storedHistory = localStorage.getItem('searchHistory');
             const history = storedHistory ? JSON.parse(storedHistory) : [];
   
-            // Avoid duplicate entries in the history
+            // Avoid duplicate entries in history
             const isDuplicate = history.some(
               (entry: { englishWord: string }) => entry.englishWord === historyItem.englishWord
             );
@@ -99,11 +104,12 @@ export default function Page() {
     }
   }, [word]);
   
+  
   const addToFavorites = () => {
     if (englishDefinitions && spanishDefinitions) {
       const favoriteItem = {
         englishWord: word || '',
-        spanishWord: spanishDefinitions.shortdef[0]?.split('(')[0]?.trim() || '',
+        spanishWord: spanishDefinitions.definitions?.[0]?.split('(')[0]?.trim() || '',
       };
   
       // Retrieve existing favorites from localStorage
@@ -116,7 +122,6 @@ export default function Page() {
       );
   
       if (!isDuplicate) {
-        // Add new entry to favorites
         favorites.push(favoriteItem);
         localStorage.setItem('favorites', JSON.stringify(favorites));
         alert(`${favoriteItem.englishWord} added to favorites!`);
@@ -125,6 +130,7 @@ export default function Page() {
       }
     }
   };
+  
   
   
   return (
@@ -146,6 +152,7 @@ export default function Page() {
         {noResultsMessage && <p className="text-yellow-500">{noResultsMessage}</p>}
         {!error && !noResultsMessage && (
           <div className="flex justify-between">
+            
             {/* English Definition */}
             {englishDefinitions && (
               <div className="w-1/2 pr-4">
@@ -164,23 +171,20 @@ export default function Page() {
             )}
   
             {/* Spanish Definition */}
-            {spanishDefinitions && (
-              <div className="w-1/2 pl-4">
-                <h2 className="text-3xl text-emerald-500 p-2">
-                  {spanishDefinitions.shortdef[0]?.split('(')[0]?.trim()}
-                </h2>
-                <div className="p-2">
-                  <strong>La Definición:</strong>
-                  <ul className="list-disc pl-5">
-                    {spanishDefinitions.shortdef.map((def, defIndex) => (
-                      <li key={defIndex} className="p-2">
-                        {def}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+            <div className="w-1/2 pl-4">
+              <h2 className="text-3xl text-emerald-500 p-2">{spanishDefinitions?.headword || 'No translation'}</h2>
+              <div className="p-2">
+                <strong>La Definición:</strong>
+                <ul className="list-disc pl-5">
+                  {spanishDefinitions?.definitions?.map((def, index) => (
+                    <li key={index} className="p-2">{def}</li>
+                  )) || 'No definitions available'}
+                </ul>
               </div>
-            )}
+            </div>
+
+
+
           </div>
         )}
       </div>
