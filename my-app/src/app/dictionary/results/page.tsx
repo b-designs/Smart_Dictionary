@@ -2,7 +2,8 @@
  * DESCRIPTION:
  * This file handles the results page. The searched word
  * uses the DictionaryEntry interface to display the relevant
- * information. 
+ * information.
+ * The API's used are the Websters Dictionary Medical and Spanish APIs
  * 
  */
 
