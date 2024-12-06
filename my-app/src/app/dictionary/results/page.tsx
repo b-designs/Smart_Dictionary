@@ -15,12 +15,24 @@ import { useSearchParams } from 'next/navigation';
 interface DictionaryEntry {
   meta: {
     src: string;
-  }
+    id: string;
+    uuid: string;
+    sort: string;
+    stems: string[];
+    offensive: boolean;
+  };
   hwi: {
     hw: string; // The word itself
+    prs?: {
+      mw: string; // Pronunciation (e.g., "ˈhärt")
+      sound?: {
+        audio: string; // Audio filename (e.g., "heart001")
+      };
+    }[]; // Array of pronunciations
   };
   shortdef: string[]; // Array of definitions
 }
+
 
 interface TranslatedEntry {
   headword: string;
@@ -104,6 +116,24 @@ export default function Page() {
     }
   }, [word]);
   
+  const playPronunciation = (audioFile: string) => {
+    const subdirectory = audioFile.startsWith("bix")
+      ? "bix"
+      : audioFile.startsWith("gg")
+      ? "gg"
+      : /^[0-9]/.test(audioFile[0])
+      ? "number"
+      : audioFile[0];
+  
+    const audioUrl = `https://media.merriam-webster.com/audio/prons/en/us/mp3/${subdirectory}/${audioFile}.mp3`;
+  
+    // Debugging
+    console.log("Audio URL:", audioUrl);
+  
+    const audio = new Audio(audioUrl);
+    audio.play();
+  };
+  
   
   const addToFavorites = () => {
     if (englishDefinitions && spanishDefinitions) {
@@ -140,23 +170,40 @@ export default function Page() {
         <div className="mt-4">
           <button
             onClick={addToFavorites}
-            className="bg-emerald-400 text-white px-4 py-2 rounded hover:bg-purple-400"
+            className="bg-emerald-400 text-white px-4 py-2 rounded hover:bg-emerald-600"
           >
             Add to Favorites
           </button>
         </div>
       </div>
-
-      <div className="border border-gray-200 p-4 my-4">  
+  
+      <div className="border border-gray-200 p-4 my-4">
         {error && <p className="text-red-500">{error}</p>}
         {noResultsMessage && <p className="text-yellow-500">{noResultsMessage}</p>}
         {!error && !noResultsMessage && (
           <div className="flex justify-between">
-            
             {/* English Definition */}
             {englishDefinitions && (
               <div className="w-1/2 pr-4">
-                <h2 className="text-3xl text-emerald-500 p-2">{englishDefinitions.hwi?.hw}</h2>
+                <div className="flex items-center">
+                  <h2 className="text-3xl text-emerald-500 p-2">{englishDefinitions.hwi?.hw}</h2>
+                  {englishDefinitions?.hwi?.prs?.[0]?.sound?.audio && (
+                  <button
+                    onClick={() => {
+                      const audioFile = englishDefinitions?.hwi?.prs?.[0]?.sound?.audio;
+                      if (audioFile) {
+                        playPronunciation(audioFile);
+                      } else {
+                        console.error("No audio file available for pronunciation");
+                      }
+                    }}
+                    className="ml-4 bg-purple-500 text-white px-2 py-1 rounded hover:bg-purple-600"
+                  >
+                    🔊 Pronounce
+                  </button>
+                )}
+
+                </div>
                 <div className="p-2">
                   <strong>Definition:</strong>
                   <ul className="list-disc pl-5">
@@ -172,22 +219,28 @@ export default function Page() {
   
             {/* Spanish Definition */}
             <div className="w-1/2 pl-4">
-              <h2 className="text-3xl text-emerald-500 p-2">{spanishDefinitions?.headword || 'No translation'}</h2>
+              <h2 className="text-3xl text-emerald-500 p-2">
+                {spanishDefinitions?.headword || "No translation"}
+              </h2>
               <div className="p-2">
                 <strong>La Definición:</strong>
                 <ul className="list-disc pl-5">
-                  {spanishDefinitions?.definitions?.map((def, index) => (
-                    <li key={index} className="p-2">{def}</li>
-                  )) || 'No definitions available'}
+                  {spanishDefinitions?.definitions?.length ? (
+                    spanishDefinitions.definitions.map((def, index) => (
+                      <li key={index} className="p-2">
+                        {def}
+                      </li>
+                    ))
+                  ) : (
+                    <li>No definitions available</li>
+                  )}
                 </ul>
               </div>
             </div>
-
-
-
           </div>
         )}
       </div>
     </main>
   );
+  
 }

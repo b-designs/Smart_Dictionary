@@ -14,7 +14,6 @@ export async function GET(req) {
 
     const medicalApiKey = process.env.MEDICAL_API_KEY;
     const medicalURL = `https://www.dictionaryapi.com/api/v3/references/medical/json/${word}?key=${medicalApiKey}`;
-    // const medicalURL = `https://www.dictionaryapi.com/api/v3/references/medical/json/${word}?key=${'df8f6014-25ee-4b48-ae1b-e3b10677c259'}`;
 
     try {
         // Fetch English definitions
