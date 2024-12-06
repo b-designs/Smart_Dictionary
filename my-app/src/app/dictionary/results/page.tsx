@@ -35,47 +35,115 @@ export default function Page() {
       try {
         const res = await fetch(`/api/dictionary?word=${word}`);
         const data = await res.json();
-
+  
         console.log('API Response data:', data);
-
+  
         if (res.ok) {
-
+          // Extract English and Spanish definitions
           const englishData = data.english.find((entry: any) => entry.meta?.src === 'medical');
           const spanishData = data.spanish.find((entry: any) => entry.meta?.src === 'spanish');
-
+  
           setEnglishDefinitions(englishData || null);
           setSpanishDefinitions(spanishData || null);
-
+  
           // Check for no results
           if (!englishData && !spanishData) {
             setNoResultsMessage(`No results found for the word '${word}'`);
           } else {
             setNoResultsMessage(null); // Clear the message if results are found
           }
+  
           setError(null);
-        } 
-        else {
+  
+          // Add the word to the history in localStorage
+          if (englishData && spanishData) {
+            const historyItem = {
+              englishWord: word || '',
+              spanishWord: spanishData.shortdef[0]?.split('(')[0]?.trim() || '',
+            };
+  
+            // Retrieve the existing history from localStorage
+            const storedHistory = localStorage.getItem('searchHistory');
+            const history = storedHistory ? JSON.parse(storedHistory) : [];
+  
+            // Avoid duplicate entries in the history
+            const isDuplicate = history.some(
+              (entry: { englishWord: string }) => entry.englishWord === historyItem.englishWord
+            );
+  
+            if (!isDuplicate) {
+              // Add new entry to the history
+              history.push(historyItem);
+  
+              // Enforce a maximum limit (e.g., 10 words)
+              const maxHistoryLimit = 10;
+              if (history.length > maxHistoryLimit) {
+                history.shift(); // Remove the oldest entry if the limit is exceeded
+              }
+  
+              // Update localStorage
+              localStorage.setItem('searchHistory', JSON.stringify(history));
+            }
+          }
+        } else {
           setError('No definitions found');
         }
-      } 
-      catch (err) {
+      } catch (err) {
         console.error('Failed to fetch definitions:', err);
         setError('Failed to fetch definitions');
       }
     };
-
+  
     if (word) {
       fetchDefinitions();
     }
   }, [word]);
   
+  const addToFavorites = () => {
+    if (englishDefinitions && spanishDefinitions) {
+      const favoriteItem = {
+        englishWord: word || '',
+        spanishWord: spanishDefinitions.shortdef[0]?.split('(')[0]?.trim() || '',
+      };
+  
+      // Retrieve existing favorites from localStorage
+      const storedFavorites = localStorage.getItem('favorites');
+      const favorites = storedFavorites ? JSON.parse(storedFavorites) : [];
+  
+      // Avoid duplicate entries
+      const isDuplicate = favorites.some(
+        (entry: { englishWord: string }) => entry.englishWord === favoriteItem.englishWord
+      );
+  
+      if (!isDuplicate) {
+        // Add new entry to favorites
+        favorites.push(favoriteItem);
+        localStorage.setItem('favorites', JSON.stringify(favorites));
+        alert(`${favoriteItem.englishWord} added to favorites!`);
+      } else {
+        alert(`${favoriteItem.englishWord} is already in favorites!`);
+      }
+    }
+  };
+  
+  
   return (
     <main>
-      <h1 className="mt-4 text-black-700">Results for {word}...</h1>
-      <div className="border border-gray-200 p-4 my-4">
+      <div className="flex justify-between items-center mt-4">
+        <h1 className="mt-4 text-black-700">Results for {word}...</h1>
+        <div className="mt-4">
+          <button
+            onClick={addToFavorites}
+            className="bg-emerald-400 text-white px-4 py-2 rounded hover:bg-purple-400"
+          >
+            Add to Favorites
+          </button>
+        </div>
+      </div>
+
+      <div className="border border-gray-200 p-4 my-4">  
         {error && <p className="text-red-500">{error}</p>}
         {noResultsMessage && <p className="text-yellow-500">{noResultsMessage}</p>}
-  
         {!error && !noResultsMessage && (
           <div className="flex justify-between">
             {/* English Definition */}

@@ -5,6 +5,7 @@ import {
   EnvelopeIcon,
   FolderIcon,
   DocumentMagnifyingGlassIcon,
+  StarIcon,
 } from '@heroicons/react/24/outline';
 
 // Map of links to display in the side navigation.
@@ -22,6 +23,7 @@ const links = [
     icon: FolderIcon,
     // icon: HomeIcon,
   },
+  { name: 'Favorites', href: '/dictionary/favorites', icon: StarIcon},
   { name: 'About', href: '/dictionary/about', icon: UserGroupIcon},
   { name: 'Contact', href: '/dictionary/contact', icon: EnvelopeIcon },
 ];
